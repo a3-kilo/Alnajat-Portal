@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>بوابة النجاة التعليمية</title>
+    <!-- تأكد من استخدام روابط CDN كاملة للمكتبات الخارجية -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,24 +42,26 @@
       .bg-emerald-600 .markdown-content td { border-color: rgba(255,255,255,0.1); }
       .bg-emerald-600 .markdown-content blockquote { border-right-color: #fff; color: rgba(255,255,255,0.9); }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.10.1",
-    "html2canvas": "https://esm.sh/html2canvas@1.4.1",
-    "jspdf": "https://esm.sh/jspdf@2.5.1",
-    "marked": "https://esm.sh/marked@12.0.1",
-    "pptxgenjs": "https://esm.sh/pptxgenjs@3.12.0"
-  }
-}
-</script>
-</head>
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react": "https://esm.sh/react@^19.2.3",
+        "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+        "react-router-dom": "https://esm.sh/react-router-dom@^7.10.1",
+        "html2canvas": "https://esm.sh/html2canvas@1.4.1",
+        "jspdf": "https://esm.sh/jspdf@2.5.1",
+        "marked": "https://esm.sh/marked@12.0.1",
+        "pptxgenjs": "https://esm.sh/pptxgenjs@3.12.0"
+      }
+    }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
+    <!-- تأكد من أن استدعاء ملف الـ TSX يتم بشكل موديول ومسار نسبي -->
+    <script type="module" src="./index.tsx"></script>
   </body>
 </html>
