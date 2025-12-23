@@ -1,0 +1,8 @@
+{
+  "name": "بوابة النجاة - AlNajat Portal",
+  "description": "منصة إدارة مدرسية شاملة مدعومة بالذكاء الاصطناعي - A comprehensive AI-powered school management platform.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
