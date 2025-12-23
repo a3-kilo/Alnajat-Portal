@@ -13,7 +13,7 @@ interface ChatMessage {
 export const getAIResponse = async (currentMessage: string, history: ChatMessage[], contextData: any): Promise<string> => {
   
   // يتم استخدام المفتاح من البيئة البرمجية، أو يمكنك وضعه هنا مباشرة للتجربة
-  const apiKey = process.env.API_KEY || "ضع_مفتاح_OpenRouter_هنا"; 
+  const apiKey = "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";
 
   if (!apiKey || apiKey === "ضع_مفتاح_OpenRouter_هنا") {
     return "تنبيه: يرجى التأكد من ضبط مفتاح API الخاص بـ OpenRouter في ملف geminiService.ts لكي يعمل المساعد الذكي.";
