@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>بوابة النجاة التعليمية</title>
-    <!-- تأكد من استخدام روابط CDN كاملة للمكتبات الخارجية -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,10 +36,6 @@
       .markdown-content th, .markdown-content td { padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); text-align: right; }
       .markdown-content th { background: rgba(0,0,0,0.1); font-weight: 800; }
       .markdown-content blockquote { border-right: 4px solid #10b981; padding-right: 1rem; margin-right: 0; font-style: italic; color: rgba(0,0,0,0.6); }
-      
-      .bg-emerald-600 .markdown-content th { background: rgba(255,255,255,0.1); }
-      .bg-emerald-600 .markdown-content td { border-color: rgba(255,255,255,0.1); }
-      .bg-emerald-600 .markdown-content blockquote { border-right-color: #fff; color: rgba(255,255,255,0.9); }
     </style>
     <script type="importmap">
     {
@@ -61,7 +56,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- تأكد من أن استدعاء ملف الـ TSX يتم بشكل موديول ومسار نسبي -->
-    <script type="module" src="./index.tsx"></script>
+    <!-- ملاحظة: GitHub Pages يحتاج للمسار النسبي النقدي في الـ Script -->
+    <script type="module" src="index.tsx"></script>
   </body>
 </html>
