@@ -1,5 +1,4 @@
 
-import { GoogleGenAI, Modality } from "@google/genai";
 import { UserRole } from "../types";
 
 interface ChatMessage {
@@ -7,100 +6,113 @@ interface ChatMessage {
   content: string;
 }
 
+/**
+ * دالة جلب الرد من الذكاء الاصطناعي عبر OpenRouter
+ * تم ضبطها لتعطي أفضل النتائج في اللغة العربية وتنسيق البوربوينت
+ */
 export const getAIResponse = async (currentMessage: string, history: ChatMessage[], contextData: any): Promise<string> => {
-  if (!process.env.API_KEY) return "عذراً، نظام الذكاء الاصطناعي يتطلب مفتاح تشغيل. يرجى التواصل مع الإدارة.";
+  
+  // يتم استخدام المفتاح من البيئة البرمجية، أو يمكنك وضعه هنا مباشرة للتجربة
+  const apiKey = process.env.API_KEY || "ضع_مفتاح_OpenRouter_هنا"; 
+
+  if (!apiKey || apiKey === "ضع_مفتاح_OpenRouter_هنا") {
+    return "تنبيه: يرجى التأكد من ضبط مفتاح API الخاص بـ OpenRouter في ملف geminiService.ts لكي يعمل المساعد الذكي.";
+  }
 
   const { currentUser, stats } = contextData;
+  const isAdmin = currentUser.role === UserRole.ADMIN;
+  const isTeacher = currentUser.role === UserRole.TEACHER;
+
+  // تخصيص التعليمات بناءً على دور المستخدم للحصول على نتائج دقيقة
+  let roleInstructions = "";
+  if (isAdmin) {
+    roleInstructions = `
+      أنت الآن تعمل كـ 'خبير إدارة مدرسية' ومستشار لمدير مدرسة النجاة (الأستاذ شريف السباعي).
+      سياق المدرسة الحالي:
+      - عدد الطلاب: ${stats.totalStudents}
+      - عدد المعلمين: ${stats.totalTeachers}
+      - نسبة الحضور اليومي: ${stats.attendanceRate}%
+      
+      مهامك للمدير:
+      1. تحليل بيانات الغياب بذكاء واقتراح حلول إدارية.
+      2. صياغة تعاميم رسمية بلهجة وقورة وحازمة.
+      3. تقديم أفكار تطويرية للمدرسة.
+    `;
+  } else if (isTeacher) {
+    roleInstructions = `
+      أنت مساعد تربوي خبير للمعلم (${currentUser.name}) في مدرسة النجاة.
+      مهامك:
+      1. تحضير دروس مبتكرة وشاملة.
+      2. إنشاء محتوى تعليمي للعروض التقديمية (PPT) بأسلوب مشوق.
+      3. اقتراح أنشطة صفية تفاعلية.
+    `;
+  } else {
+    roleInstructions = `أنت مساعد تعليمي ذكي في مدرسة النجاة، تساعد الطالب أو ولي الأمر في فهم المناهج ومتابعة المسيرة التعليمية بأسلوب مشجع ولطيف.`;
+  }
+
+  const systemInstruction = `
+    اسمك: 'مساعد بوابة النجاة الذكي'.
+    المدرسة: مدرسة النجاة الأهلية - السالمية.
+    المستخدم الحالي: ${currentUser.name}.
+    
+    ${roleInstructions}
+
+    قواعد التنسيق الإلزامية (مهم جداً):
+    - عند طلب إنشاء عرض تقديمي (بوربوينت) أو PPT:
+      * يجب أن يبدأ المحتوى بـ [[PPT_START]] وينتهي بـ [[PPT_END]].
+      * استخدم الرمز ## قبل عنوان كل شريحة (مثال: ## عنوان الشريحة).
+      * اجعل المحتوى منسقاً على شكل نقاط واضحة.
+    - استخدم اللغة العربية الفصحى الراقية.
+    - لا تذكر أنك نموذج لغوي، تصرف دائماً كمساعد ذكي مدمج في بوابة النجاة.
+  `;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    const modelName = 'gemini-3-flash-preview';
-    
-    const isAdmin = currentUser.role === UserRole.ADMIN;
-    const isTeacher = currentUser.role === UserRole.TEACHER;
-
-    let roleInstructions = "";
-    if (isAdmin) {
-      roleInstructions = `
-        أنت الآن تعمل كـ 'خبير إدارة مدرسية' ومستشار لمدير النظام (الأستاذ حسن).
-        سياق العمل الحالي في مدرسة النجاة:
-        - عدد الطلاب الإجمالي: ${stats.totalStudents}
-        - عدد المعلمين: ${stats.totalTeachers}
-        - نسبة الحضور اليوم: ${stats.attendanceRate}%
-        
-        مهامك الأساسية للمدير:
-        1. تحليل اتجاهات الغياب بذكاء.
-        2. صياغة تعاميم رسمية واحترافية جداً تليق بمدرسة النجاة.
-        3. تقديم مشورات قيادية لرفع كفاءة الكادر.
-      `;
-    } else if (isTeacher) {
-      roleInstructions = `
-        أنت مساعد تربوي للمعلم (${currentUser.name}).
-        مهامك:
-        1. تحضير دروس مبتكرة تليق بمدرسة النجاة.
-        2. إنشاء محتوى للعروض التقديمية (PPT) بأسلوب عصري جداً ومرتب.
-        3. اقتراح أساليب تدريس تفاعلية.
-      `;
-    }
-
-    const systemInstruction = `
-      اسمك: 'مساعد بوابة النجاة الذكي'.
-      المدرسة: مدرسة النجاة الأهلية.
-      المستخدم: ${currentUser.name}.
-      
-      ${roleInstructions}
-
-      قواعد عامة:
-      - عند طلب بوربوينت، استخدم التنسيق: [[PPT_START]] ثم العناوين تبدأ بـ ## ثم [[PPT_END]].
-      - تحدث بلهجة واثقة، مهنية، ومحترمة جداً.
-      - لا تذكر أبداً أنك نموذج لغوي.
-    `;
-
-    const chatHistory = history.map(msg => ({
-      role: msg.role === 'ai' ? 'model' : 'user',
-      parts: [{ text: msg.content }]
-    }));
-
-    const response = await ai.models.generateContent({
-      model: modelName,
-      contents: [
-        ...chatHistory,
-        { role: 'user', parts: [{ text: currentMessage }] }
-      ],
-      config: {
-        systemInstruction: systemInstruction,
-        temperature: 0.7,
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": window.location.origin,
+        "X-Title": "AlNajat School Portal",
+        "Content-Type": "application/json"
       },
+      body: JSON.stringify({
+        "model": "google/gemini-2.0-flash-001", // أفضل موديل من حيث السرعة والجودة والتكلفة
+        "messages": [
+          { "role": "system", "content": systemInstruction },
+          ...history.map(msg => ({
+            "role": msg.role === 'ai' ? 'assistant' : 'user',
+            "content": msg.content
+          })),
+          { "role": "user", "content": currentMessage }
+        ],
+        "temperature": 0.7,
+        "top_p": 0.9
+      })
     });
 
-    return response.text || "عذراً، لم أتمكن من معالجة طلبك حالياً.";
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || "فشل الاتصال بمزود الخدمة");
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || "عذراً، لم أتمكن من توليد رد حالياً. يرجى المحاولة مرة أخرى.";
   } catch (error) {
-    console.error("AI Error:", error);
-    return "نعتذر، هناك ضغط على خوادم الذكاء الاصطناعي. حاول مرة أخرى لاحقاً.";
+    console.error("OpenRouter API Error:", error);
+    return `نعتذر، حدث خطأ في النظام الذكي: ${error instanceof Error ? error.message : 'خطأ غير معروف'}`;
   }
 };
 
+/**
+ * دالة توليد الصوت (TTS)
+ * ملاحظة: عبر OpenRouter يتم استخدام ميزة Speech Synthesis الخاصة بالمتصفح كبديل سريع
+ */
 export const generateSpeech = async (text: string): Promise<string | undefined> => {
-  if (!process.env.API_KEY) return undefined;
-
-  try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `تحدث بوضوح واحترافية باللغة العربية: ${text.replace(/\[\[.*?\]\]/g, '').replace(/##/g, '')}` }] }],
-      config: {
-        responseModalities: [Modality.AUDIO],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Kore' }, 
-          },
-        },
-      },
-    });
-
-    return response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-  } catch (error) {
-    console.error("TTS Error:", error);
-    return undefined;
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(text.replace(/\[\[PPT_START\]\]|\[\[PPT_END\]\]|##/g, ''));
+    utterance.lang = 'ar-SA';
+    utterance.rate = 1.0;
+    window.speechSynthesis.speak(utterance);
   }
+  return undefined; 
 };
