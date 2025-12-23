@@ -10,7 +10,7 @@ export const getAIResponse = async (currentMessage: string, history: ChatMessage
   
   // لـ GitHub Pages، إذا لم تكن تستخدم عملية Build معقدة، يفضل وضع المفتاح هنا مباشرةً 
   // أو استبداله بمتغير البيئة إذا كنت تستخدم Vite أو Webpack.
-  const apiKey = "ضع_مفتاح_OpenRouter_الخاص_بك_هنا"; 
+   const apiKey = "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";
 
   if (!apiKey || apiKey === "ضع_مفتاح_OpenRouter_الخاص_بك_هنا") {
     return "تنبيه: يرجى وضع مفتاح API الخاص بـ OpenRouter في ملف geminiService.ts لكي يعمل المساعد الذكي.";
